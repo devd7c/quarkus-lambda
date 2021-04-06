@@ -2,10 +2,31 @@
   Transform: AWS::Serverless-2016-10-31
   Description: AWS Serverless Quarkus HTTP - code-with-quarkus-1.0.0-SNAPSHOT
   Globals:
+    Function:
+      Timeout: 50
+      Environment:
+        Variables:
+          RDS_PROXY: sreproxyrds.proxy-cjf8fe0nqq0g.us-east-1.rds.amazonaws.com:5432
+          RDS_ENDPOINT: sd1fao206w2h8dg.cjf8fe0nqq0g.us-east-1.rds.amazonaws.com:5432
+          RDS_DB_NAME: income
+          RDS_USERNAME: masterincome
+          RDS_PASSWORD: iamasterincome
     Api:
-      EndpointConfiguration: REGIONAL
-      BinaryMediaTypes:
-        - "*/*"
+      Cors:
+        AllowMethods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,X-Amz-Security-Token,Authorization,X-Api-Key,X-Requested-With,Accept,Access-Control-Allow-Methods,Access-Control-Allow-Origin,Access-Control-Allow-Headers'"
+        AllowOrigin: "'*'"
+        AllowCredentials: "'*'"
+
+  Parameters:
+    SecurityGroupIds:
+      Type: CommaDelimitedList
+    SubnetIDs:
+      Type: CommaDelimitedList
+      Description: list
+    ArnCognito:
+      Type: String
+      Description: arn
 
   Resources:
     CodeWithQuarkusNative:
@@ -23,10 +44,24 @@
         Events:
           HttpApiEvent:
             Type: HttpApi
+            Properties:
+              ApiId: !Ref HttpApi
+        VpcConfig:
+          SecurityGroupIds: !Ref SecurityGroupIds
+          SubnetIds: !Ref SubnetIDs
 
-  Outputs:
-    CodeWithQuarkusNativeApi:
-      Description: URL for application
-      Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/'
-      Export:
-        Name: CodeWithQuarkusNativeApi
+    HttpApi:
+      Type: AWS::Serverless::HttpApi
+      Properties:
+        CorsConfiguration:
+          AllowOrigins:
+            - "*"
+          AllowMethods:
+            - GET
+            - POST
+            - PUT
+          AllowCredentials: false
+          ExposeHeaders:
+            - "application/json"
+          AllowHeaders:
+            - "*"

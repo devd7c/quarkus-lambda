@@ -6,6 +6,7 @@ stack_name = "QuarkusDev"
 s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1xpwtfuk3wzay"
 s3_prefix = "QuarkusDev"
 region = "us-east-1"
-profile = "aws-temp"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
+parameter_overrides = "SecurityGroupIds=\"sg-08acb8bd80c685b41\" SubnetIDs=\"subnet-17883771,subnet-4116ac60\" ArnCognito=\"arn:aws:cognito-idp:us-east-1:575735418477:userpool/us-east-1_12NmCAfGn\""
+profile = "aws-temp"
