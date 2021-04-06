@@ -4,13 +4,6 @@
   Globals:
     Function:
       Timeout: 50
-      Environment:
-        Variables:
-          RDS_PROXY: sreproxyrds.proxy-cjf8fe0nqq0g.us-east-1.rds.amazonaws.com:5432
-          RDS_ENDPOINT: sd1fao206w2h8dg.cjf8fe0nqq0g.us-east-1.rds.amazonaws.com:5432
-          RDS_DB_NAME: income
-          RDS_USERNAME: masterincome
-          RDS_PASSWORD: iamasterincome
     Api:
       Cors:
         AllowMethods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
