@@ -1,7 +1,7 @@
-package org.acme.repositories;
+package aws.lambda.repositories;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
-import org.acme.entities.ADUser;
+import aws.lambda.entities.ADUser;
 
 import javax.enterprise.context.ApplicationScoped;
 

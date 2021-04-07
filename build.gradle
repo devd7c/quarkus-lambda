@@ -20,8 +20,8 @@ dependencies {
     testImplementation 'io.rest-assured:rest-assured'
 }
 
-group 'org.acme'
-version '1.0.0-SNAPSHOT'
+group 'aws.lambda'
+version '1.0.0-AWS'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11

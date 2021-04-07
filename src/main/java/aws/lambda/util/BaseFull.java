@@ -1,4 +1,4 @@
-package org.acme.util;
+package aws.lambda.util;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;

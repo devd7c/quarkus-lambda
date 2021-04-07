@@ -2,9 +2,9 @@ version = 0.1
 [default]
 [default.deploy]
 [default.deploy.parameters]
-stack_name = "QuarkusDev"
+stack_name = "SystemsLambda"
 s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1xpwtfuk3wzay"
-s3_prefix = "QuarkusDev"
+s3_prefix = "SystemsLambda"
 region = "us-east-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"

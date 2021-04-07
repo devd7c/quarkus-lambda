@@ -1,6 +1,6 @@
-package org.acme.entities;
+package aws.lambda.entities;
 
-import org.acme.util.BaseFull;
+import aws.lambda.util.BaseFull;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -43,6 +43,8 @@ public class ADUser extends BaseFull {
     private Date sessionEnd;
     @Basic
     private String name;
+    @Basic
+    private String ci;
 
     public Integer getId() {
         return id;
@@ -139,7 +141,4 @@ public class ADUser extends BaseFull {
     public void setCi(String ci) {
         this.ci = ci;
     }
-
-    @Basic
-    private String ci;
 }

@@ -1,7 +1,7 @@
-package org.acme.repositories;
+package aws.lambda.repositories;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
-import org.acme.entities.ADSystem;
+import aws.lambda.entities.ADSystem;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.List;

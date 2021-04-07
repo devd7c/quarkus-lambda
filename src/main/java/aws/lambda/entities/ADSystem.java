@@ -1,11 +1,8 @@
-package org.acme.entities;
+package aws.lambda.entities;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import org.acme.util.BaseFull;
+import aws.lambda.util.BaseFull;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
-import java.util.Date;
 
 @Entity(name = "ADSystem")
 @Table( name ="ad_system", schema = "admin")

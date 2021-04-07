@@ -1,11 +1,11 @@
-package org.acme;
+package aws.lambda;
 
 import java.io.IOException;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.acme.entities.ADSystem;
+import aws.lambda.entities.ADSystem;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -19,9 +19,9 @@ import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.ext.Provider;
 
-import org.acme.entities.ADUser;
-import org.acme.repositories.SystemDao;
-import org.acme.repositories.UserDao;
+import aws.lambda.entities.ADUser;
+import aws.lambda.repositories.SystemDao;
+import aws.lambda.repositories.UserDao;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
@@ -159,12 +159,12 @@ public class SystemEndpoint {
 
         @Override
         public void filter(ContainerRequestContext requestContext,
-                           ContainerResponseContext cres) throws IOException {
-            cres.getHeaders().add("Access-Control-Allow-Origin", "*");
-            cres.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
-            cres.getHeaders().add("Access-Control-Allow-Credentials", "true");
-            cres.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
-            cres.getHeaders().add("Access-Control-Expose-Headers", "application/json");
+                           ContainerResponseContext CRC) throws IOException {
+            CRC.getHeaders().add("Access-Control-Allow-Origin", "*");
+            CRC.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
+            CRC.getHeaders().add("Access-Control-Allow-Credentials", "true");
+            CRC.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
+            CRC.getHeaders().add("Access-Control-Expose-Headers", "application/json");
         }
 
     }
