@@ -3,7 +3,6 @@ package org.acme;
 import java.io.IOException;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.acme.entities.ADSystem;
@@ -20,7 +19,9 @@ import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.ext.Provider;
 
-import org.acme.repositories.ADSystemRepository;
+import org.acme.entities.ADUser;
+import org.acme.repositories.SystemDao;
+import org.acme.repositories.UserDao;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
@@ -28,18 +29,20 @@ import org.jboss.resteasy.annotations.jaxrs.PathParam;
 @ApplicationScoped
 @Produces("application/json")
 @Consumes("application/json")
-public class SystemResource {
+public class SystemEndpoint {
 
-    private static final Logger LOGGER = Logger.getLogger(SystemResource.class.getName());
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final Logger LOGGER = Logger.getLogger(SystemEndpoint.class.getName());
 
     @Inject
-    ADSystemRepository adSystemRepository;
+    SystemDao systemDao;
+
+    @Inject
+    UserDao userDao;
 
     @GET
     @Path("/find_all/{auth}/{control}")
     public Response get() {
-        List<ADSystem> entityLs = adSystemRepository.findAllList();
+        List<ADSystem> entityLs = systemDao.findAllList();
         return Response.ok(entityLs)
                 .status(200)
                 .build();
@@ -48,7 +51,7 @@ public class SystemResource {
     @GET
     @Path("/read/{id}/{auth}")
     public ADSystem getSingle(@PathParam Integer id) {
-        ADSystem entity = adSystemRepository.findById(id);
+        ADSystem entity = systemDao.findById(id);
         if (entity == null) {
             throw new WebApplicationException("Entity with id of " + id + " does not exist.", 404);
         }
@@ -58,23 +61,21 @@ public class SystemResource {
     @POST
     @Path("/create/{auth}")
     @Transactional
-    public Response create(String requestBody) {
-        ADSystem entity = fromJson(requestBody, ADSystem.class);
+    public Response create(ADSystem entity) {
         try {
             //Here I use the persistAndFlush() shorthand method on a Panache repository to persist to database then flush the changes.
             if (entity.getId() != null) {
                 throw new WebApplicationException("Id was invalidly set on request.", 422);
             }
-            adSystemRepository.persistAndFlush(entity);
-            return Response.ok("OK").status(200).build();
+            Boolean exist = systemDao.existEntity(entity);
+            if(!exist) {
+                systemDao.persistAndFlush(entity);
+                return Response.ok("OK").status(200).build();
+            } else return Response.ok("EXIST").status(200).build();
         }
         catch(PersistenceException pe){
-            //LOG.error("Unable to create the parameter", pe);
-            //in case of error, I save it to disk
-            //diskPersister.save(parameter);
             throw new WebApplicationException(pe.getMessage(), 500);
         }
-        //entity.persist();
     }
 
     @POST
@@ -82,18 +83,21 @@ public class SystemResource {
     @Transactional
     public Response update(@PathParam Integer id, ADSystem updateEntity) {
         try {
-            ADSystem entity = adSystemRepository.findById(id);
+            ADSystem entity = systemDao.findById(id);
 
             if (entity == null) {
                 throw new WebApplicationException("Entity with id of " + id + " does not exist.", 404);
             }
-            entity.setName(updateEntity.getName());
-            entity.setDescription(updateEntity.getDescription());
-            entity.setAddress(updateEntity.getAddress());
-            entity.setMessage(updateEntity.getMessage());
-            entity.setEmail(updateEntity.getEmail());
-            entity.setUserAdmin(updateEntity.getUserAdmin());
-            return Response.ok("OK").status(200).build();
+            Boolean exist = systemDao.existUpdateEntity(entity.getId(), updateEntity);
+            if(!exist) {
+                entity.setName(updateEntity.getName());
+                entity.setDescription(updateEntity.getDescription());
+                entity.setAddress(updateEntity.getAddress());
+                entity.setMessage(updateEntity.getMessage());
+                entity.setEmail(updateEntity.getEmail());
+                entity.setUserAdmin(updateEntity.getUserAdmin());
+                return Response.ok("OK").status(200).build();
+            } else return Response.ok("EXIST").status(200).build();
         }
         catch(PersistenceException pe){
             throw new WebApplicationException(pe.getMessage(), 500);
@@ -103,13 +107,16 @@ public class SystemResource {
     @POST
     @Path("/delete/{id}/{auth}")
     @Transactional
-    public Response delete(@PathParam Integer id) {
+    public Response delete(@PathParam Integer id, @PathParam Integer auth) {
         try {
-            ADSystem entity = adSystemRepository.findById(id);
+            ADSystem entity = systemDao.findById(id);
+            ADUser user = userDao.findById(auth);
+
             if (entity == null) {
                 throw new WebApplicationException("Entity with id of " + id + " does not exist.", 404);
             }
             entity.setStatus(0);
+            entity.setUserAdmin(user.getUsername());
             return Response.ok("OK").status(200).build();
         }
         catch(PersistenceException pe){
@@ -160,13 +167,5 @@ public class SystemResource {
             cres.getHeaders().add("Access-Control-Expose-Headers", "application/json");
         }
 
-    }
-
-    private static <T> T fromJson(String json, Class<T> type) {
-        try {
-            return OBJECT_MAPPER.readValue(json, type);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

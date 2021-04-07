@@ -1,40 +1,36 @@
 package org.acme.entities;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import org.acme.util.BaseFull;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Date;
 
-@Entity
+@Entity(name = "ADSystem")
 @Table( name ="ad_system", schema = "admin")
 @Cacheable
-public class ADSystem {
+public class ADSystem extends BaseFull {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "system_id", length = 40, unique = true)
+    @Column(name = "system_id", length = 64, nullable = false)
     private Integer id;
 
+    @Basic
     @Column(length = 150)
     private String name;
+    @Basic
     @Column(length = 500)
     private String description;
+    @Basic
     @Column(length = 150)
     private String address;
+    @Basic
     @Column(length = 500)
     private String message;
+    @Basic
     @Column(length = 54)
     private String email;
-    @Column(length = 16, nullable = false)
-    private Integer status;
-    @Column(name = "user_admin", length = 100, nullable = false)
-    protected String userAdmin;
-    @Column(name = "society_id", length = 15)
-    private String societyId;
-    @Column(name = "created_at", insertable = false, updatable = false)
-    private Date createdAt;
-    @Column(name = "updated_at")
-    private Date updatedAt;
 
     public Integer getId() {
         return id;
@@ -82,45 +78,5 @@ public class ADSystem {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public String getUserAdmin() {
-        return userAdmin;
-    }
-
-    public void setUserAdmin(String userAdmin) {
-        this.userAdmin = userAdmin;
-    }
-
-    public String getSocietyId() {
-        return societyId;
-    }
-
-    public void setSocietyId(String societyId) {
-        this.societyId = societyId;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }
