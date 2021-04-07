@@ -47,6 +47,11 @@
             - DELETE
           AllowCredentials: false
           ExposeHeaders:
+            - "*"
             - "application/json"
           AllowHeaders:
             - "*"
+            - "origin"
+            - "content-type"
+            - "accept"
+            - "authorization"

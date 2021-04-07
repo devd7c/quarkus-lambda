@@ -3,6 +3,7 @@ package org.acme;
 import java.io.IOException;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.acme.entities.ADSystem;
@@ -30,6 +31,7 @@ import org.jboss.resteasy.annotations.jaxrs.PathParam;
 public class SystemResource {
 
     private static final Logger LOGGER = Logger.getLogger(SystemResource.class.getName());
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Inject
     ADSystemRepository adSystemRepository;
@@ -41,7 +43,6 @@ public class SystemResource {
         return Response.ok(entityLs)
                 .status(200)
                 .build();
-        //return adSystemRepository.findAllList();
     }
 
     @GET
@@ -57,7 +58,8 @@ public class SystemResource {
     @POST
     @Path("/create/{auth}")
     @Transactional
-    public Response create(ADSystem entity) {
+    public Response create(String requestBody) {
+        ADSystem entity = fromJson(requestBody, ADSystem.class);
         try {
             //Here I use the persistAndFlush() shorthand method on a Panache repository to persist to database then flush the changes.
             if (entity.getId() != null) {
@@ -75,7 +77,7 @@ public class SystemResource {
         //entity.persist();
     }
 
-    @PUT
+    @POST
     @Path("/update/{id}/{auth}")
     @Transactional
     public Response update(@PathParam Integer id, ADSystem updateEntity) {
@@ -90,9 +92,7 @@ public class SystemResource {
             entity.setAddress(updateEntity.getAddress());
             entity.setMessage(updateEntity.getMessage());
             entity.setEmail(updateEntity.getEmail());
-            entity.setStatus(updateEntity.getStatus());
             entity.setUserAdmin(updateEntity.getUserAdmin());
-            entity.setSocietyId(updateEntity.getSocietyId());
             return Response.ok("OK").status(200).build();
         }
         catch(PersistenceException pe){
@@ -100,7 +100,7 @@ public class SystemResource {
         }
     }
 
-    @DELETE
+    @POST
     @Path("/delete/{id}/{auth}")
     @Transactional
     public Response delete(@PathParam Integer id) {
@@ -109,7 +109,7 @@ public class SystemResource {
             if (entity == null) {
                 throw new WebApplicationException("Entity with id of " + id + " does not exist.", 404);
             }
-            adSystemRepository.delete(entity);
+            entity.setStatus(0);
             return Response.ok("OK").status(200).build();
         }
         catch(PersistenceException pe){
@@ -160,5 +160,13 @@ public class SystemResource {
             cres.getHeaders().add("Access-Control-Expose-Headers", "application/json");
         }
 
+    }
+
+    private static <T> T fromJson(String json, Class<T> type) {
+        try {
+            return OBJECT_MAPPER.readValue(json, type);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
